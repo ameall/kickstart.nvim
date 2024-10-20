@@ -237,6 +237,42 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   -- 'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
+  {
+    'stevearc/oil.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      CustomOilBar = function()
+        local path = vim.fn.expand '%'
+        path = path:gsub('oil://', '')
+
+        return '  ' .. vim.fn.fnamemodify(path, ':.')
+      end
+
+      require('oil').setup {
+        columns = { 'icon' },
+        keymaps = {
+          ['<C-h>'] = false,
+          ['<C-l>'] = false,
+          ['<C-k>'] = false,
+          ['<C-j>'] = false,
+          ['<M-h>'] = 'actions.select_split',
+        },
+        win_options = {
+          winbar = '%{v:lua.CustomOilBar()}',
+        },
+        view_options = {
+          show_hidden = true,
+        },
+      }
+
+      -- Open parent directory in current window
+      vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+
+      -- Open parent directory in floating window
+      vim.keymap.set('n', '<space>-', require('oil').toggle_float)
+    end,
+  },
+
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
